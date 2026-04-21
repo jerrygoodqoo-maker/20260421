@@ -1,6 +1,7 @@
 let capture;
 let pg; // 用於存儲 createGraphics 的圖層
 let bubbles = []; // 儲存泡泡的陣列
+let saveBtn; // 儲存按鈕物件
 
 function setup() {
   // 產生全螢幕畫布
@@ -23,6 +24,11 @@ function setup() {
       offset: random(TWO_PI) // 用於產生左右晃動的隨機相位
     });
   }
+
+  // 建立按鈕
+  saveBtn = createButton('儲存截圖 (JPG)');
+  saveBtn.mousePressed(saveImage);
+  updateButtonPosition();
 }
 
 function draw() {
@@ -107,4 +113,25 @@ function draw() {
 function windowResized() {
   // 視窗大小改變時，重新調整畫布大小
   resizeCanvas(windowWidth, windowHeight);
+  updateButtonPosition();
+}
+
+// 更新按鈕位置，使其保持在視訊畫面下方
+function updateButtonPosition() {
+  let videoH = height * 0.6;
+  let y = (height - videoH) / 2;
+  // 將按鈕放在視訊畫面下方 20 像素處，並水平置中
+  saveBtn.position(width / 2 - saveBtn.width / 2, y + videoH + 20);
+}
+
+// 執行截圖並儲存
+function saveImage() {
+  let videoW = width * 0.6;
+  let videoH = height * 0.6;
+  let x = (width - videoW) / 2;
+  let y = (height - videoH) / 2;
+  
+  // 抓取畫布上視訊區域的影像內容
+  let img = get(x, y, videoW, videoH);
+  save(img, 'my_mosaic_art.jpg');
 }
