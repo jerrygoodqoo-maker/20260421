@@ -1,6 +1,6 @@
 let capture;
 let pg; // 用於存儲 createGraphics 的圖層
-let bubbles = []; // 儲存泡泡資料的陣列
+let bubbles = []; // 儲存泡泡的陣列
 
 function setup() {
   // 產生全螢幕畫布
@@ -13,12 +13,12 @@ function setup() {
   // 初始化一個與初始影片預期大小相同的繪圖層
   pg = createGraphics(windowWidth * 0.6, windowHeight * 0.6);
 
-  // 初始化一些泡泡的資料
-  for (let i = 0; i < 40; i++) {
+  // 初始化泡泡數據
+  for (let i = 0; i < 50; i++) {
     bubbles.push({
       x: random(pg.width),
       y: random(pg.height),
-      r: random(10, 30),
+      r: random(5, 20),
       speed: random(1, 3)
     });
   }
@@ -42,15 +42,15 @@ function draw() {
 
   // 在繪圖層 (pg) 上畫些東西，例如文字或圖案
   pg.clear(); // 清除上一幀的內容
-  
+
   // 繪製並更新泡泡效果
   pg.noStroke();
-  pg.fill(255, 255, 255, 150); // 白色半透明泡泡
+  pg.fill(255, 255, 255, 150); // 半透明白色
   for (let b of bubbles) {
     pg.ellipse(b.x, b.y, b.r);
-    b.y -= b.speed; // 向上漂浮
+    b.y -= b.speed; // 泡泡向上移動
     
-    // 如果泡泡飛出上方，則回到下方重新出現
+    // 如果泡泡超出頂部，將其重置到底部隨機位置
     if (b.y < -b.r) {
       b.y = pg.height + b.r;
       b.x = random(pg.width);
