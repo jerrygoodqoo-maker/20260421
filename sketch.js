@@ -62,11 +62,42 @@ function draw() {
     }
   }
 
-  // 處理鏡像翻轉並繪製影像
+  // 處理鏡像翻轉
   push();
   translate(x + videoW, y); // 移動到顯示區域的右側
   scale(-1, 1);            // 水平反轉
-  image(capture, 0, 0, videoW, videoH);
+
+  // 馬賽克與黑白化處理
+  capture.loadPixels();
+  let unitSize = 20; // 每個單位的寬高
+
+  if (capture.pixels.length > 0) {
+    // 遍歷攝影機影像的像素
+    for (let cy = 0; cy < capture.height; cy += unitSize) {
+      for (let cx = 0; cx < capture.width; cx += unitSize) {
+        // 取得該單位左上角像素的顏色 (也可以取中心點)
+        let index = (cx + cy * capture.width) * 4;
+        let r = capture.pixels[index];
+        let g = capture.pixels[index + 1];
+        let b = capture.pixels[index + 2];
+
+        // 計算平均值取得黑白數值
+        let avg = (r + g + b) / 3;
+
+        // 設定填充顏色為黑白，並繪製單位矩形
+        fill(avg);
+        noStroke();
+        
+        // 將攝影機座標映射到畫布顯示的大小
+        let dx = map(cx, 0, capture.width, 0, videoW);
+        let dy = map(cy, 0, capture.height, 0, videoH);
+        let dw = map(unitSize, 0, capture.width, 0, videoW);
+        let dh = map(unitSize, 0, capture.height, 0, videoH);
+        
+        rect(dx, dy, dw, dh);
+      }
+    }
+  }
   pop();
 
   // 將產生的圖層顯示在視訊畫面的上方
