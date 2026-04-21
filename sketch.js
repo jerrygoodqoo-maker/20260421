@@ -19,7 +19,8 @@ function setup() {
       x: random(pg.width),
       y: random(pg.height),
       r: random(5, 20),
-      speed: random(1, 3)
+      speed: random(1, 3),
+      offset: random(TWO_PI) // 用於產生左右晃動的隨機相位
     });
   }
 }
@@ -40,17 +41,21 @@ function draw() {
     pg = createGraphics(videoW, videoH);
   }
 
-  // 在繪圖層 (pg) 上畫些東西，例如文字或圖案
+  // 在繪圖層 (pg) 上處理效果
   pg.clear(); // 清除上一幀的內容
 
-  // 繪製並更新泡泡效果
-  pg.noStroke();
-  pg.fill(255, 255, 255, 150); // 半透明白色
+  // 繪製並更新冒泡泡效果
+  pg.stroke(255, 255, 255, 180); // 泡泡的淡白色邊框
+  pg.strokeWeight(1);
+  pg.fill(255, 255, 255, 100);    // 半透明白色填充
   for (let b of bubbles) {
-    pg.ellipse(b.x, b.y, b.r);
+    // 結合 sin 函數讓泡泡產生左右搖擺的動態感
+    let swayX = b.x + sin(frameCount * 0.05 + b.offset) * 10;
+    pg.ellipse(swayX, b.y, b.r);
+    
     b.y -= b.speed; // 泡泡向上移動
     
-    // 如果泡泡超出頂部，將其重置到底部隨機位置
+    // 如果泡泡完全超出頂部，則回到下方重新開始
     if (b.y < -b.r) {
       b.y = pg.height + b.r;
       b.x = random(pg.width);
